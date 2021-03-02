@@ -1,0 +1,38 @@
+{
+  "name": "eidng8/laravel-schema-ext",
+  "description": "Adds various types to laravel schema definition.",
+  "type": "library",
+  "require": {
+    "PHP": "^7.3 || ^8"
+  },
+  "require-dev": {
+    "ext-pdo": "*",
+    "laravel/framework": "^7 || ^8",
+    "orchestra/testbench": "^6",
+    "phpunit/phpunit": "^9.5"
+  },
+  "license": "GPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "eidng8",
+      "email": "cheung.jackey@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "eidng8\\Laravel\\Schema\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "eidng8\\Laravel\\Schema\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "eidng8\\Laravel\\Schema\\ServiceProvider"
+      ]
+    }
+  }
+}
