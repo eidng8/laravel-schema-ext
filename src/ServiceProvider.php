@@ -9,6 +9,7 @@ namespace eidng8\Laravel\Schema;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
+use Illuminate\Database\Schema\ForeignIdColumnDefinition;
 use Illuminate\Database\Schema\Grammars\Grammar;
 use Illuminate\Support\Fluent;
 use Illuminate\Support\ServiceProvider as BaseProvider;
@@ -35,6 +36,7 @@ class ServiceProvider extends BaseProvider
         return $this->addColumn('binary_', $column, compact('length'));
       }
     );
+
     Blueprint::macro(
       'binary_v',
       function ($column, $length = null) {
@@ -43,11 +45,39 @@ class ServiceProvider extends BaseProvider
         return $this->addColumn('binary_v', $column, compact('length'));
       }
     );
+
     Blueprint::macro(
       'uuid_',
       function ($column) {
         /** @noinspection PhpUndefinedMethodInspection */
         return $this->binary_($column, 16);
+      }
+    );
+
+    Blueprint::macro(
+      'foreignUuid_',
+      function ($column) {
+        /** @noinspection PhpUndefinedMethodInspection PhpParamsInspection */
+        return $this->addColumnDefinition(
+          new ForeignIdColumnDefinition(
+            $this,
+            ['type' => 'uuid_', 'name' => $column]
+          )
+        );
+      }
+    );
+
+    Blueprint::macro(
+      'foreignIdFor_',
+      function ($model, $column = null) {
+        if (is_string($model)) {
+          $model = new $model();
+        }
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        return $model->getKeyType() === 'int' && $model->getIncrementing()
+          ? $this->foreignId($column ?: $model->getForeignKey())
+          : $this->foreignUuid_($column ?: $model->getForeignKey());
       }
     );
   }
@@ -83,6 +113,15 @@ class ServiceProvider extends BaseProvider
           default:
             return "varbinary({$column->length})";
         }
+      }
+    );
+
+    Grammar::macro(
+      'typeUuid_',
+      function (Fluent $column) {
+        $column->length = 16;
+        /** @noinspection PhpUndefinedMethodInspection */
+        return $this->typeBinary_($column);
       }
     );
   }

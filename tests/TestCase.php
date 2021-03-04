@@ -26,11 +26,11 @@ abstract class TestCase extends BaseTestCase
     return \DB::connection('testing');
   }
 
-  protected function assertSql(string $expected, Blueprint $blueprint): void
+  protected function assertSql(array $expected, Blueprint $blueprint): void
   {
     static::assertEquals(
       $expected,
-      $blueprint->toSql($this->connection(), $this->grammar())[0]
+      $blueprint->toSql($this->connection(), $this->grammar())
     );
   }
 

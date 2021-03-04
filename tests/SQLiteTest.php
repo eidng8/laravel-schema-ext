@@ -22,7 +22,7 @@ class SQLiteTest extends TestCase
       }
     );
     $this->assertSql(
-      'alter table "test_table" add column "test_column" blob(255) not null',
+      ['alter table "test_table" add column "test_column" blob(255) not null'],
       $blueprint
     );
   }
@@ -36,7 +36,7 @@ class SQLiteTest extends TestCase
       }
     );
     $this->assertSql(
-      'alter table "test_table" add column "test_column" blob(16) not null',
+      ['alter table "test_table" add column "test_column" blob(16) not null'],
       $blueprint
     );
   }
@@ -50,7 +50,7 @@ class SQLiteTest extends TestCase
       }
     );
     $this->assertSql(
-      'alter table "test_table" add column "test_column" blob(255) not null',
+      ['alter table "test_table" add column "test_column" blob(255) not null'],
       $blueprint
     );
   }
@@ -64,7 +64,7 @@ class SQLiteTest extends TestCase
       }
     );
     $this->assertSql(
-      'alter table "test_table" add column "test_column" blob(16) not null',
+      ['alter table "test_table" add column "test_column" blob(16) not null'],
       $blueprint
     );
   }
@@ -78,13 +78,52 @@ class SQLiteTest extends TestCase
       }
     );
     $this->assertSql(
-      'alter table "test_table" add column "test_column" blob(16) not null',
+      ['alter table "test_table" add column "test_column" blob(16) not null'],
+      $blueprint
+    );
+  }
+
+  public function test_uuid_foreign_for_model()
+  {
+    $model = new TestModel();
+    $model->setKeyType('uuid');
+    $blueprint = new Blueprint(
+      'test_table',
+      function ($table) use ($model) {
+        $table->foreignIdFor_($model, 'test_id')->constrained();
+      }
+    );
+    $this->assertSql(
+      [
+        'alter table "test_table" add column "test_id" blob(16) not null',
+        // SQLite doesn't generate foreign key constraint
+      ],
+      $blueprint
+    );
+  }
+
+  public function test_id_foreign_for_model()
+  {
+    $model = new TestModel();
+    $model->setKeyType('int');
+    $blueprint = new Blueprint(
+      'test_table',
+      function ($table) use ($model) {
+        $table->foreignIdFor_($model, 'test_id')->constrained();
+      }
+    );
+    $this->assertSql(
+      [
+        'alter table "test_table" add column "test_id" integer not null',
+        // SQLite doesn't generate foreign key constraint
+      ],
       $blueprint
     );
   }
 
   protected function grammar(): Grammar
   {
+    config(['database.connections.testing.foreign_key_constraints' => true]);
     return new SQLiteGrammar();
   }
 }
