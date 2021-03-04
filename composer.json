@@ -2,6 +2,9 @@
   "name": "eidng8/laravel-schema-ext",
   "description": "Adds various types to laravel schema definition.",
   "type": "library",
+  "scripts": {
+    "test": "phpunit"
+  },
   "require": {
     "PHP": "^7.3 || ^8"
   },
